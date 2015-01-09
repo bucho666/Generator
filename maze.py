@@ -42,44 +42,52 @@ class Direction(object):
     ALL = [N, S, E, W]
 
 class TreeDigger(object):
+    STEP = 2
     def __init__(self, map, start_coordinate):
         self._map =  map
-        self.joints = []
-        self._current = Coordinate(start_coordinate)
+        self._joints = []
+        self._tip = Coordinate(start_coordinate)
 
     def dig(self):
         self._grow_branch()
-        while self.joints:
+        while self._joints:
             self._grow_branch()
 
     def _grow_branch(self):
+        for dir in self._random_dir_list():
+            if not self._growable(dir): continue
+            self._grow_branch_to(dir)
+            return
+        self._tip_back()
+
+    def _random_dir_list(self):
         dirs = list(Direction.ALL)
         random.shuffle(dirs)
-        for dir in dirs:
-            if not self._can_dig(dir): continue
-            self._graw_branch_to(dir)
-            return
-        self._current_back()
+        return dirs
 
-    def _current_back(self):
-        self._current = self.joints.pop()
+    def _tip_back(self):
+        self._tip = self._joints.pop()
 
-    def _graw_branch_to(self, direction):
-        for s in range(2):
-            self._current += direction
-            self._dig_current_coordinate()
-        self.joints.append(self._current.copy())
+    def _grow_branch_to(self, direction):
+        for s in range(self.STEP):
+            self._tip += direction
+            self._dig_tip_coordinate()
+        self._joints.append(self._tip.copy())
 
-    def _can_dig(self, direction):
-        check = self._current.copy()
-        for s in range(2):
-            check += direction
-            if not self._map.is_in(check.xy()): return False
-            if self._map.is_floor_at(check.xy()): return False
+    def _growable(self, direction):
+        check_point = self._tip.copy()
+        for s in range(self.STEP):
+            check_point += direction
+            if not self._growable_coordinate(check_point): return False
         return True
 
-    def _dig_current_coordinate(self):
-        self._map.set_floor(self._current.xy())
+    def _growable_coordinate(self, coordinate):
+        if not self._map.is_in(coordinate.xy()): return False
+        if self._map.is_floor_at(coordinate.xy()): return False
+        return True
+
+    def _dig_tip_coordinate(self):
+        self._map.set_floor(self._tip.xy())
 
 if __name__ == '__main__':
     import map
