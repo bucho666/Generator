@@ -7,7 +7,6 @@ class MazeBuilder(object):
         self._map = map
 
     def build(self):
-        self._map.fill('#')
         self._dig_maze()
 
     def _dig_maze(self):
@@ -80,14 +79,14 @@ class TreeDigger(object):
         return True
 
     def _dig_current_coordinate(self):
-        xy = self._current.xy()
-        self._map.set_tile('.', xy)
+        self._map.set_floor(self._current.xy())
 
 if __name__ == '__main__':
+    import map
     class Main(object):
         MAP_SIZE = (81, 21)
         def __init__(self):
-            self._map = Map(self.MAP_SIZE)
+            self._map = map.Map(self.MAP_SIZE)
 
         def run(self):
             MazeBuilder(self._map).build()
