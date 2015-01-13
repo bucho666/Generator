@@ -3,11 +3,16 @@
 import random
 
 class MazeBuilder(object):
-    def __init__(self, map):
+    def __init__(self, map, start_region):
         self._map = map
+        self._region = start_region
+
+    def current_region(self):
+        return self._region
 
     def build(self):
         self._dig_maze()
+        return self
 
     def _dig_maze(self):
         w, h = self._map.size()
@@ -17,7 +22,8 @@ class MazeBuilder(object):
 
     def _dig_tree(self, (x, y)):
         if self._map.is_floor_at((x, y)): return
-        TreeDigger(self._map, (x, y)).dig()
+        TreeDigger(self._map, (x, y), str(self._region)).dig()
+        self._region += 1
 
 class Coordinate(object):
     def __init__(self, coordinate):
@@ -43,10 +49,11 @@ class Direction(object):
 
 class TreeDigger(object):
     STEP = 2
-    def __init__(self, map, start_coordinate):
+    def __init__(self, map, start_coordinate, region):
         self._map =  map
         self._joints = []
         self._tip = Coordinate(start_coordinate)
+        self._region = region
 
     def dig(self):
         self._grow_branch()
@@ -87,17 +94,8 @@ class TreeDigger(object):
         return True
 
     def _dig_tip_coordinate(self):
-        self._map.set_floor(self._tip.xy())
+        self._map.set_region(self._tip.xy(), self._region)
 
 if __name__ == '__main__':
-    import map
-    class Main(object):
-        MAP_SIZE = (81, 21)
-        def __init__(self):
-            self._map = map.Map(self.MAP_SIZE)
-
-        def run(self):
-            MazeBuilder(self._map).build()
-            self._map.render()
-
-    Main().run()
+    import generator
+    generator.Main().run()

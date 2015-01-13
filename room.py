@@ -8,20 +8,20 @@ class Room(object):
         self._coordinate = coordinate
         self._size = size
 
-    def dig(self, map):
+    def dig(self, map, region):
         cx, cy = self._coordinate
         cx += 1
         cy += 1
         w, h = self._size
         for y in range(h-1):
             for x in range(w-1):
-                map.set_floor((x+cx, y+cy))
+                map.set_region((x+cx, y+cy), region)
 
     def is_over_lapped(self, other):
         (x, y), (w, h) = self._coordinate, self._size
         (ox, oy), (ow, oh) = other._coordinate, other._size
-        x_hit = (x <= ox+ow and x+w >= ox)
-        y_hit = (y <= oy+oh and y+h >= oy)
+        x_hit = (x < ox+ow and x+w > ox)
+        y_hit = (y < oy+oh and y+h > oy)
         return x_hit and y_hit
 
     def is_inside(self, (x, y)):
@@ -46,21 +46,27 @@ class TupleRange(object):
         return (self._a.random_value(step), self._b.random_value(step))
 
 class RoomBuilder(object):
-    def __init__(self, map):
+    def __init__(self, map, start_region):
         self._map = map
         self._room_size_range = TupleRange(Range(6, 12), Range(4, 6))
         self._rooms = []
+        self._region = start_region
+
+    def current_region(self):
+        return self._region
 
     def build(self, room_build_num):
         for count in range(room_build_num):
             self._build_room()
+        return self
 
     def _build_room(self):
         room_size = self._room_size_range.random_value(step=2)
         room_position = self._random_room_position(room_size)
         room = Room(room_position, room_size)
         if self._is_over_lapped(room): return
-        room.dig(self._map)
+        room.dig(self._map, str(self._region))
+        self._region += 1
         self._rooms.append(room)
 
     def _is_over_lapped(self, target_room):
@@ -76,13 +82,15 @@ class RoomBuilder(object):
 if __name__ == '__main__':
     import map
     class Main(object):
-        MAP_SIZE = (21, 9)
+        MAP_SIZE = (81, 9)
         def __init__(self):
             self._map = map.Map(self.MAP_SIZE)
 
         def run(self):
-            RoomBuilder(self._map).build(10)
+            region = RoomBuilder(self._map, 0).build(10).current_region()
             self._map.render()
+            print region
+            raw_input()
 
     Main().run()
 

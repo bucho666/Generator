@@ -4,7 +4,6 @@ import os
 
 class Map(object):
     WALL = '#'
-    FLOOR = '.'
 
     def __init__(self, (w, h)):
         self._grid = [[self.WALL for x in range(w)] for y in range(h)]
@@ -18,11 +17,11 @@ class Map(object):
     def size(self):
         return len(self._grid[0]), len(self._grid)
 
-    def set_floor(self, (x, y)):
-        self._grid[y][x] = self.FLOOR
+    def set_region(self, (x, y), region='.'):
+        self._grid[y][x] = region
 
     def is_wall_at(self, (x, y)):
-        return self._grid[y][x] != self.FLOOR
+        return self._grid[y][x] == self.WALL
 
     def is_floor_at(self, coord):
         return not self.is_wall_at(coord)
@@ -31,3 +30,7 @@ class Map(object):
         w, h = self.size()
         return x > 0 and y > 0 and \
                x < w and y < h
+
+if __name__ == '__main__':
+    import generator
+    generator.Main().run()
