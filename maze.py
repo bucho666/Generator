@@ -61,6 +61,7 @@ class TreeDigger(object):
             self._grow_branch()
 
     def _grow_branch(self):
+        self._dig_tip_coordinate()
         for dir in self._random_dir_list():
             if not self._growable(dir): continue
             self._grow_branch_to(dir)
