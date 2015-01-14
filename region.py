@@ -6,21 +6,34 @@ class Connector(object):
         self._conection_nodes = []
         self._remain = set()
         self._connected = set()
+        self._candidate = []
 
-    def connect_regions(self):
-        candidate = self._map.connect_nodes()
-        self._make_remain_nodes(candidate)
+    def connect_regions(self, random_connect=0):
+        self._candidate = self._map.connect_nodes()
+        self._make_remain_nodes()
         while(self._remain):
-            n = random.choice(candidate)
-            if self._is_connected_node(n):
-                candidate.remove(n)
-                continue
-            self._add_connection_nodes(n)
+            self._try_connect()
+        self._connects_random(random_connect)
         self._set_doors()
         return self
 
-    def _make_remain_nodes(self, candidate):
-        for n in candidate:
+    def _connects_random(self, num):
+        for c in range(num):
+            self._connect_random()
+
+    def _connect_random(self):
+        n = random.choice(self._candidate)
+        self._add_connection_nodes(n)
+
+    def _try_connect(self):
+        n = random.choice(self._candidate)
+        if self._is_connected_node(n):
+            self._candidate.remove(n)
+            return
+        self._add_connection_nodes(n)
+
+    def _make_remain_nodes(self):
+        for n in self._candidate:
             self._remain.update(n.region_pair())
 
     def _add_connection_nodes(self, node):
@@ -36,7 +49,7 @@ class Connector(object):
 
     def _is_connected_node(self, node):
         low, upper = set(node.region_pair())
-        return self._connected and low in self._connected == upper in self._connected
+        return self._connected and low in self._connected != upper in self._connected
 
 if __name__ == '__main__':
     import generator

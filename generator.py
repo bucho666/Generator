@@ -13,7 +13,7 @@ class Main(object):
         region = 0
         region = room.RoomBuilder(self._map, region).build(100).current_region()
         region = maze.MazeBuilder(self._map, region).build().current_region()
-        Connector(self._map).connect_regions()
+        Connector(self._map).connect_regions(10)
         self._map.render()
         raw_input()
 
