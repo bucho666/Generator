@@ -2,6 +2,7 @@
 import maze
 import map
 import room
+from region import Connector
 
 class Main(object):
     MAP_SIZE = (49, 9)
@@ -12,6 +13,7 @@ class Main(object):
         region = 0
         region = room.RoomBuilder(self._map, region).build(100).current_region()
         region = maze.MazeBuilder(self._map, region).build().current_region()
+        Connector(self._map).connect_regions()
         self._map.render()
         print region
         raw_input()

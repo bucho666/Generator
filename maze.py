@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import random
+from coordinate import Coordinate
+from coordinate import Direction
 
 class MazeBuilder(object):
     def __init__(self, map, start_region):
@@ -25,28 +27,6 @@ class MazeBuilder(object):
         TreeDigger(self._map, (x, y), str(self._region)).dig()
         self._region += 1
 
-class Coordinate(object):
-    def __init__(self, coordinate):
-        self._coordinate = coordinate
-
-    def xy(self):
-        return self._coordinate
-
-    def __add__(self, other):
-        x, y = self._coordinate
-        ox, oy = other.xy()
-        return Coordinate((x + ox, y + oy))
-
-    def copy(self):
-        return Coordinate(self._coordinate)
-
-class Direction(object):
-    N = Coordinate(( 0, -1))
-    S = Coordinate(( 0,  1))
-    E = Coordinate(( 1,  0))
-    W = Coordinate((-1,  0))
-    ALL = [N, S, E, W]
-
 class TreeDigger(object):
     STEP = 2
     def __init__(self, map, start_coordinate, region):
@@ -69,7 +49,7 @@ class TreeDigger(object):
         self._tip_back()
 
     def _random_dir_list(self):
-        dirs = list(Direction.ALL)
+        dirs = list(Direction.CARDINAL)
         random.shuffle(dirs)
         return dirs
 
