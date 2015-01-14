@@ -17,14 +17,12 @@ class MazeBuilder(object):
         return self
 
     def _dig_maze(self):
-        w, h = self._map.size()
-        for y in range(1, h - 1, 2):
-            for x in range(1, w - 1, 2):
-                self._dig_tree((x, y))
+        for c in self._map.odd_coordinates():
+            self._dig_tree(c)
 
-    def _dig_tree(self, (x, y)):
-        if self._map.is_floor_at((x, y)): return
-        TreeDigger(self._map, (x, y), str(self._region)).dig()
+    def _dig_tree(self, coordinate):
+        if self._map.is_floor_at(coordinate): return
+        TreeDigger(self._map, coordinate, str(self._region)).dig()
         self._region += 1
 
 class TreeDigger(object):
@@ -54,6 +52,7 @@ class TreeDigger(object):
         return dirs
 
     def _tip_back(self):
+        if not self._joints: return
         self._tip = self._joints.pop()
 
     def _grow_branch_to(self, direction):

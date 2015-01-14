@@ -5,7 +5,7 @@ import room
 from region import Connector
 
 class Main(object):
-    MAP_SIZE = (49, 9)
+    MAP_SIZE = (81, 13)
     def __init__(self):
         self._map = map.Map(self.MAP_SIZE)
 
@@ -15,7 +15,6 @@ class Main(object):
         region = maze.MazeBuilder(self._map, region).build().current_region()
         Connector(self._map).connect_regions()
         self._map.render()
-        print region
         raw_input()
 
 if __name__ == '__main__':
