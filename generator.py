@@ -12,12 +12,13 @@ class Main(object):
 
     def run(self):
         region = 0
-        region = room.RoomBuilder(self._map, region).build(100).current_region()
+        region = room.RoomBuilder(self._map, region)\
+            .set_room_size_range((8, 16), (4, 6))\
+            .build(100).current_region()
         region = maze.MazeBuilder(self._map, region).build().current_region()
         connector = Connector(self._map)
         connector.connect_regions()
         Filler(self._map).fill()
-        self._map.render()
         connector.connect_random(10)
         self._map.render()
         raw_input()

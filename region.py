@@ -31,8 +31,6 @@ class Connector(object):
         n = random.choice(self._candidate)
         if self._new_connection(n):
             self._add_connection_nodes(n)
-        else:
-            self._candidate.remove(n)
 
     def _make_remain_nodes(self):
         for n in self._candidate:

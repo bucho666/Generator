@@ -30,7 +30,7 @@ class Room(object):
         return cx <= x and x <= cx+w and cy <= y and y <= cy+h
 
 class Range(object):
-    def __init__(self, min, max):
+    def __init__(self, (min, max)):
         self._min = min
         self._max = max
 
@@ -48,9 +48,13 @@ class TupleRange(object):
 class RoomBuilder(object):
     def __init__(self, map, start_region):
         self._map = map
-        self._room_size_range = TupleRange(Range(6, 12), Range(4, 6))
+        self._room_size_range = TupleRange(Range((6, 12)), Range((4, 6)))
         self._rooms = []
         self._region = start_region
+
+    def set_room_size_range(self, width, height):
+        self._room_size_range = TupleRange(Range(width), Range(height))
+        return self
 
     def current_region(self):
         return self._region
@@ -76,7 +80,7 @@ class RoomBuilder(object):
 
     def _random_room_position(self, (room_width, room_height)):
         map_width, map_height = self._map.size()
-        room_position_range = TupleRange(Range(0, map_width - room_width), Range(0, map_height - room_height))
+        room_position_range = TupleRange(Range((0, map_width - room_width)), Range((0, map_height - room_height)))
         return room_position_range.random_value(step=2)
 
 if __name__ == '__main__':
