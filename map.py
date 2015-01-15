@@ -36,6 +36,9 @@ class Map(object):
     def set_region(self, (x, y), region='.'):
         self._grid[y][x] = region
 
+    def set_wall(self, (x, y)):
+        self._grid[y][x] = self.WALL
+
     def set_door(self, (x, y)):
         self._grid[y][x] = self.DOOR
 
@@ -45,8 +48,13 @@ class Map(object):
     def is_wall_at(self, (x, y)):
         return self._grid[y][x] == self.WALL
 
+    def is_door_at(self, (x, y)):
+        return self._grid[y][x] == self.DOOR
+
     def is_floor_at(self, coord):
-        return not self.is_wall_at(coord)
+        if self.is_wall_at(coord): return False
+        if self.is_door_at(coord): return False
+        return True
 
     def is_in(self, (x, y)):
         w, h = self.size()
@@ -73,11 +81,15 @@ class Map(object):
             nodes.append(n)
         return nodes
 
+    def is_deadend(self, coordinate):
+        walls = len([c for c in Coordinate(coordinate).cardinal() if self.is_wall_at(c.xy())])
+        return walls > 2
+
     def _make_connect_node(self, coordinate):
         if not self.is_wall_at(coordinate): return None
         regions = []
         for p in [c.xy() for c in Coordinate(coordinate).cardinal()]:
-            if self.is_wall_at(p): continue
+            if not self.is_floor_at(p): continue
             r = self.tile(p)
             if r in regions: continue
             regions.append(r)
